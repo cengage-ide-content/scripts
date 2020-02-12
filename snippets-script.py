@@ -45,7 +45,7 @@ def read_from_file(filename):
         f.close()
         return content
     except:
-        print("Error: can not open "+filename+" original file.")
+        print("Error: can not open "+ filename +" original file.")
 
 """
 def search_and_copy(content)
@@ -53,12 +53,15 @@ Read and return content from a filename.
 """
 def search_and_copy(content):
     finalcode = ''
-    content = content.replace('```\n', 'codeblock102')
-    content = content.replace('```', 'codeblock102')
-    code = re.findall(r"codeblock102((.|\n)*?)codeblock102", content)
-    for one in code:
-        finalcode =  finalcode + str(one[0]) + "\n"
+    if content != None:
+        content = content.replace('```\n', 'codeblock102')
+        content = content.replace('```', 'codeblock102')
+        code = re.findall(r"codeblock102((.|\n)*?)codeblock102", content)
+        for one in code:
+            finalcode =  finalcode + str(one[0]) + "\n"
+    
     return finalcode
+
 
 """
 def pathtosave(pathtofile)
@@ -97,28 +100,23 @@ def main():
         for path, subdirs, files in os.walk(path_to_scan):
             for name in files:
                 fullpathtofile = os.path.join(path, name)
-                if "instructions" in fullpathtofile:
+                if "instructions" in fullpathtofile and "md" in fullpathtofile:
                     content = read_from_file(fullpathtofile)
                     extractedcode = search_and_copy(content)
-                    if extractedcode:                    
+                    if extractedcode != None:                    
                         filenamesaving = filenametosave(fullpathtofile)
                         if filenamesaving:
                             pathsaving = pathtosave(fullpathtofile)
-                            print("Read: "+fullpathtofile)
-                            write_to_file(extractedcode,pathsaving,filenamesaving)
-                            print("Created: "+pathsaving+filenamesaving+"\n")
+                            print("Read: " + fullpathtofile)
+                            write_to_file(extractedcode, pathsaving, filenamesaving)
+                            print("Created: " + pathsaving + filenamesaving + "\n")
     
-    except:
-        print("Error: can not execute script.")
+    except Exception as e:
+        print("Error: can not execute script: ")
+        print(e)
     
 
 
 if __name__ == "__main__":
-
-
-    
     main()
     
-    
-
- 
