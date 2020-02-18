@@ -40,7 +40,7 @@ Read and return content from a filename.
 """
 def read_from_file(filename):
     try:
-        f = open(filename,"r")
+        f = open(filename,"r", encoding='utf-8')
         content = f.read()
         f.close()
         return content
