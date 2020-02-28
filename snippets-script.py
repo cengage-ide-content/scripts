@@ -49,17 +49,28 @@ def read_from_file(filename):
 
 """
 def search_and_copy(content)
+Copy and paste file path of content from file.
 Read and return content from a filename.
 """
-def search_and_copy(content):
+def search_and_copy(content, path):
     finalcode = ''
+    goodpath = ''
+    if "practice-exercises" in path:
+        goodpath = path.split('practice-exercises')[1].replace("\instructions\\", '\\')
+    elif "lab-activities" in path:
+        goodpath = path.split('lab-activities')[1].replace("\instructions\\", '\\')
+    elif "mla" in path:
+        goodpath = path.split('mla')[1].replace("\instructions\\", '\\')
+    elif "capstone" in path:
+        goodpath = path.split('capstone')[1].replace("\instructions\\", '\\')
     if content != None:
         content = content.replace('```\n', 'codeblock102')
         content = content.replace('```', 'codeblock102')
         code = re.findall(r"codeblock102((.|\n)*?)codeblock102", content)
         for one in code:
-            finalcode =  finalcode + str(one[0]) + "\n"
-    
+            finalcode =   finalcode + str(one[0]) + "\n"
+        finalcode = goodpath[1:] + "\n" + finalcode + "--------------------\n"
+        
     return finalcode
 
 
@@ -74,6 +85,10 @@ def pathtosave(pathtofile):
         value = pathtofile.split('lab-activities')[0]+'lab-activities\snippets\\'
     elif "practice-exercises" in pathtofile:
         value = pathtofile.split('practice-exercises')[0]+'practice-exercises\snippets\\'
+    elif "mla" in pathtofile:
+        value = pathtofile.split('mla')[0]+'mla\snippets\\'
+    elif "capstone" in pathtofile:
+        value = pathtofile.split('capstone')[0]+'capstone\snippets\\'
     return value
 
 """
@@ -85,6 +100,11 @@ def filenametosave(pathtofile):
     if "lesson-" in pathtofile:
         filename = pathtofile.split('lesson-')[1]
         filename = filename.split('\\')[0]+'_snippets.txt'
+    elif "mla" in pathtofile:
+        filename = pathtofile.split('module-')[1]
+        filename = filename.split('\\')[0]+'_snippets.txt'
+    elif "capstone" in pathtofile:
+        filename = 'capstone_snippets.txt'
     return filename
 
 """
@@ -100,16 +120,18 @@ def main():
         for path, subdirs, files in os.walk(path_to_scan):
             for name in files:
                 fullpathtofile = os.path.join(path, name)
+                line_to_search = "```"
                 if "instructions" in fullpathtofile and "md" in fullpathtofile:
                     content = read_from_file(fullpathtofile)
-                    extractedcode = search_and_copy(content)
-                    if extractedcode != None:                    
-                        filenamesaving = filenametosave(fullpathtofile)
-                        if filenamesaving:
-                            pathsaving = pathtosave(fullpathtofile)
-                            print("Read: " + fullpathtofile)
-                            write_to_file(extractedcode, pathsaving, filenamesaving)
-                            print("Created: " + pathsaving + filenamesaving + "\n")
+                    if line_to_search in content:
+                        extractedcode = search_and_copy(content, fullpathtofile)
+                        if extractedcode != None:                    
+                            filenamesaving = filenametosave(fullpathtofile)
+                            if filenamesaving:
+                                pathsaving = pathtosave(fullpathtofile)
+                                print("Read: " + fullpathtofile)
+                                write_to_file(extractedcode, pathsaving, filenamesaving)
+                                print("Created: " + pathsaving + filenamesaving + "\n")
     
     except Exception as e:
         print("Error: can not execute script: ")
